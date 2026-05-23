@@ -1107,6 +1107,11 @@
                 chosenIdx: index
             });
 
+            // Recalculate score based on completed questions: (jumlah benar / jumlah soal dikerjakan) * 100
+            const correctCount = userAnswers.filter(ans => ans.chosenIdx === ans.correctIdx).length;
+            const completedCount = userAnswers.length;
+            score = completedCount > 0 ? Math.round((correctCount / completedCount) * 100) : 0;
+
             // Disable all buttons immediately
             for (let i = 0; i < 4; i++) {
                 document.getElementById(`opt-${i}`).disabled = true;
@@ -1117,8 +1122,6 @@
 
             if (isCorrect) {
                 // Correct Choice
-                score += Math.round(100 / activeQuestions.length); // Dynamic points per correct answer
-
                 playSound('correct');
                 setMascotMood('correct');
                 document.getElementById('mascot-hint').innerHTML = `
@@ -1242,12 +1245,13 @@
             playSound('victory');
             triggerGrandConfetti();
 
-            // Set final score representation
-            document.getElementById('final-score-text').textContent = score;
-
             // Calculate correct answers count based on recorded user answers
             const correctCount = userAnswers.filter(ans => ans.chosenIdx === ans.correctIdx).length;
-            const totalCount = activeQuestions.length;
+            const totalCount = userAnswers.length;
+            score = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+
+            // Set final score representation
+            document.getElementById('final-score-text').textContent = score;
 
             // Update stats in the HTML template
             document.getElementById('correct-count').textContent = correctCount;
