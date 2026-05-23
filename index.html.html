@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Fun Quiz for Kids! 🌟</title>
+    <!-- Tailwind CSS for modern, playful layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font "Fredoka" - perfect for kids, rounded and friendly -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for playful icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti for victory celebration -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Fredoka', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            yellow: '#FFDE4D',
+                            pink: '#FF4E88',
+                            blue: '#4CC9FE',
+                            green: '#A0D8B3',
+                            purple: '#A78BFA',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom playful bouncy animations */
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-bounce-slow {
+            animation: bounce-slow 3s ease-in-out infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+        .animate-wiggle {
+            animation: wiggle 0.5s ease-in-out infinite;
+        }
+
+        /* 3D button press effect */
+        .btn-3d {
+            transition: all 0.1s ease;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.15);
+        }
+        .btn-3d:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+        }
+
+        /* Background kid-friendly pattern */
+        body {
+            background-color: #F0FDFF;
+            background-image: radial-gradient(#4ccaf31c 15%, transparent 15%),
+                              radial-gradient(#ff4e8717 15%, transparent 15%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+        }
+
+        /* Success & error shake animations */
+        @keyframes pop-in {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pop-in {
+            animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* Special styles for mobile landscape / short screens (height <= 640px) */
+        @media (max-height: 640px) {
+            body {
+                justify-content: flex-start !important;
+            }
+            header {
+                padding: 0.5rem 1rem !important;
+            }
+            header h1 {
+                font-size: 1.5rem !important;
+            }
+            header p {
+                display: none !important;
+            }
+            main {
+                padding: 0.5rem !important;
+            }
+            footer {
+                padding: 0.5rem !important;
+                font-size: 10px !important;
+            }
+            /* Shrink card padding & elements */
+            .game-card {
+                padding: 1rem !important;
+                border-width: 3px !important;
+                border-radius: 1.5rem !important;
+                margin-top: 0.25rem;
+                margin-bottom: 0.25rem;
+            }
+            #mascot-start {
+                width: 5rem !important;
+                height: 5rem !important;
+            }
+            #start-screen h2 {
+                font-size: 1.5rem !important;
+                margin-top: 0.25rem !important;
+            }
+            #start-screen p {
+                font-size: 0.95rem !important;
+                line-height: 1.25 !important;
+            }
+            #player-name {
+                padding: 0.5rem 1rem !important;
+                font-size: 1rem !important;
+            }
+            #start-screen .btn-3d {
+                font-size: 1.25rem !important;
+                padding: 0.75rem 2rem !important;
+                border-bottom-width: 6px !important;
+            }
+            /* Quiz adjustments for landscape layout */
+            #quiz-screen {
+                gap: 0.75rem !important;
+            }
+            #quiz-screen .flex.items-center.justify-between {
+                margin-bottom: 0.25rem !important;
+            }
+            #progress-bar-container {
+                height: 0.75rem !important;
+            }
+            /* Compact mascot bubble */
+            .mascot-bubble-area {
+                padding: 0.5rem !important;
+                border-radius: 1rem !important;
+            }
+            .mascot-bubble-area .w-16 {
+                width: 2.5rem !important;
+                height: 2.5rem !important;
+            }
+            .mascot-bubble-area p {
+                font-size: 0.8rem !important;
+                line-height: 1.2 !important;
+            }
+            /* Shorten questions */
+            #quiz-emoji {
+                font-size: 2.5rem !important;
+                margin-bottom: -0.25rem !important;
+            }
+            #question-text {
+                font-size: 1.25rem !important;
+                line-height: 1.2 !important;
+            }
+            /* Smaller option buttons */
+            .option-btn {
+                padding: 0.5rem 1rem !important;
+                font-size: 0.95rem !important;
+                border-bottom-width: 4px !important;
+            }
+            .option-btn .w-8 {
+                width: 1.75rem !important;
+                height: 1.75rem !important;
+                font-size: 0.85rem !important;
+            }
+            .option-label {
+                font-size: 1rem !important;
+            }
+            /* Next Button */
+            #next-container button {
+                padding: 0.5rem 2rem !important;
+                font-size: 1rem !important;
+                border-bottom-width: 4px !important;
+            }
+            /* Results Screen */
+            #results-screen {
+                padding-top: 0.25rem !important;
+                padding-bottom: 0.25rem !important;
+            }
+            #results-screen h2 {
+                font-size: 1.75rem !important;
+            }
+            #results-screen .relative.w-48 {
+                width: 7rem !important;
+                height: 7rem !important;
+            }
+            #results-screen #score-emoji {
+                font-size: 2.25rem !important;
+            }
+            #results-screen #final-score-text {
+                font-size: 1.75rem !important;
+            }
+            #results-screen .max-w-sm {
+                padding: 0.5rem !important;
+                font-size: 0.9rem !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800 selection:bg-brand-pink selection:text-white overflow-x-hidden">
+
+    <!-- Top Header Ribbon (Responsive layout heights) -->
+    <header class="w-full bg-gradient-to-r from-brand-pink via-brand-purple to-brand-blue py-3 px-4 md:py-4 shadow-md text-center text-white relative overflow-hidden shrink-0">
+        <div class="absolute -top-6 -left-6 w-16 h-16 bg-white/20 rounded-full blur-lg"></div>
+        <div class="absolute -bottom-6 -right-6 w-24 h-24 bg-white/20 rounded-full blur-lg"></div>
+        <h1 class="text-2xl md:text-4xl font-extrabold tracking-wide drop-shadow-md animate-bounce-slow">
+            🎈 Kids English Quest! ✨
+        </h1>
+        <p class="text-xs md:text-base font-medium opacity-90 mt-1">Ayo belajar Bahasa Inggris dengan ceria! 🌟</p>
+    </header>
+
+    <!-- Main Game Arena -->
+    <main class="flex-grow flex items-center justify-center p-3 md:p-6">
+        <div class="game-card w-full max-w-2xl bg-white rounded-3xl border-4 border-brand-blue shadow-2xl p-5 md:p-8 relative overflow-hidden transition-all duration-300">
+            
+            <!-- Dynamic Rainbow Wave Border at Top of Card -->
+            <div class="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-yellow-400 via-pink-400 to-blue-400"></div>
+
+            <!-- ================= START SCREEN ================= -->
+            <div id="start-screen" class="space-y-4 md:space-y-6 text-center py-2 md:py-6">
+                <!-- Mascot Area -->
+                <div class="flex justify-center">
+                    <div id="mascot-start" class="w-28 h-28 md:w-40 md:h-40 animate-bounce-slow relative transition-all">
+                        <!-- Sparky the Interactive Star Mascot SVG -->
+                        <svg viewBox="0 0 100 100" class="w-full h-full">
+                            <defs>
+                                <radialGradient id="star-grad" cx="50%" cy="50%" r="50%">
+                                    <stop offset="0%" stop-color="#FFF385" />
+                                    <stop offset="100%" stop-color="#FFD23F" />
+                                </radialGradient>
+                            </defs>
+                            <!-- Star Body -->
+                            <path d="M50 5 L63 36 L95 38 L70 60 L78 92 L50 75 L22 92 L30 60 L5 38 L37 36 Z" fill="url(#star-grad)" stroke="#E5A900" stroke-width="3" />
+                            <!-- Big Anime Eyes -->
+                            <circle cx="38" cy="48" r="6" fill="#1E293B" />
+                            <circle cx="62" cy="48" r="6" fill="#1E293B" />
+                            <circle cx="36" cy="45" r="2.5" fill="white" />
+                            <circle cx="60" cy="45" r="2.5" fill="white" />
+                            <!-- Blushing Cheeks -->
+                            <ellipse cx="32" cy="54" rx="4" ry="2" fill="#FF8A8A" />
+                            <ellipse cx="68" cy="54" rx="4" ry="2" fill="#FF8A8A" />
+                            <!-- Cute Open Smile -->
+                            <path d="M44 56 Q50 64 56 56" fill="none" stroke="#1E293B" stroke-width="3" stroke-linecap="round" />
+                        </svg>
+                        <div class="absolute -top-1 -right-4 bg-yellow-400 text-white rounded-full text-[10px] md:text-xs font-bold px-2 py-0.5 rotate-12 shadow-md">Hi! I'm Sparky!</div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-800">Hi, Teman Pintar! 🌟</h2>
+                    <p class="text-slate-600 text-sm md:text-lg max-w-md mx-auto leading-relaxed px-2">
+                        Apakah kamu siap bermain tebak kata dalam Bahasa Inggris? Caranya mudah dan menyenangkan!
+                    </p>
+                </div>
+
+                <!-- Kids Profile Name input (for personalization) -->
+                <div class="max-w-xs mx-auto space-y-1 md:space-y-2 px-4">
+                    <label for="player-name" class="block text-xs md:text-sm font-bold text-slate-500">Tulis nama panggilanmu di sini:</label>
+                    <input type="text" id="player-name" placeholder="Nama Kerenmu..." class="w-full px-4 py-2 md:py-3 rounded-2xl border-2 border-slate-300 focus:border-brand-blue outline-none text-center font-bold text-base md:text-lg text-slate-700 placeholder-slate-400 bg-slate-50 transition">
+                </div>
+
+                <div class="pt-2">
+                    <button onclick="startGame()" class="btn-3d w-full max-w-xs bg-brand-pink hover:bg-rose-500 text-white font-extrabold text-lg md:text-2xl py-3 md:py-4 px-8 rounded-2xl border-b-8 border-rose-700 transition transform hover:scale-105">
+                        MULAI KUIS! 🚀
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= QUIZ SCREEN ================= -->
+            <div id="quiz-screen" class="hidden flex flex-col gap-4">
+                <!-- Progress & Stats Bar -->
+                <div class="flex items-center justify-between gap-4 shrink-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl md:text-3xl">🏅</span>
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Skor Kamu</p>
+                            <p id="score-text" class="text-sm md:text-lg font-black text-brand-pink">0 Poin</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Sound & End Quiz Button Group -->
+                    <div class="flex items-center gap-1.5 md:gap-2">
+                        <button onclick="toggleSound()" id="sound-btn" class="w-8 h-8 md:w-10 md:h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 transition shrink-0">
+                            <i class="fa-solid fa-volume-high text-sm md:text-lg"></i>
+                        </button>
+                        <button onclick="confirmEndSession()" class="h-8 md:h-10 px-2 md:px-3 bg-rose-100 hover:bg-rose-200 text-rose-600 font-black text-xs md:text-sm rounded-xl md:rounded-2xl flex items-center gap-1.5 transition border border-rose-200 shrink-0">
+                            <i class="fa-solid fa-circle-stop"></i> Selesai
+                        </button>
+                    </div>
+
+                    <div class="text-right">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Pertanyaan</p>
+                        <p id="question-tracker" class="text-sm md:text-lg font-black text-brand-blue">1 dari 50</p>
+                    </div>
+                </div>
+
+                <!-- Interactive Visual Progress Bar -->
+                <div id="progress-bar-container" class="w-full bg-slate-100 rounded-full h-3 md:h-4 overflow-hidden p-0.5 border border-slate-200 shrink-0">
+                    <div id="progress-bar" class="bg-gradient-to-r from-brand-blue to-brand-purple h-full rounded-full transition-all duration-500" style="width: 2%"></div>
+                </div>
+
+                <!-- Mascot Mini & Chat Bubble Area (Adaptive Flex) -->
+                <div class="mascot-bubble-area flex gap-3 items-center bg-brand-blue/10 p-3 rounded-2xl border border-brand-blue/20 shrink-0">
+                    <div class="w-10 h-10 md:w-16 md:h-16 shrink-0 relative">
+                        <!-- Mascot SVG that reacts -->
+                        <svg viewBox="0 0 100 100" class="w-full h-full transition-transform duration-300" id="mascot-quiz">
+                            <path d="M50 5 L63 36 L95 38 L70 60 L78 92 L50 75 L22 92 L30 60 L5 38 L37 36 Z" fill="#FFD23F" stroke="#E5A900" stroke-width="4" />
+                            <!-- Active expression elements -->
+                            <g id="mascot-eyes">
+                                <circle cx="38" cy="48" r="6" fill="#1E293B" />
+                                <circle cx="62" cy="48" r="6" fill="#1E293B" />
+                                <circle cx="36" cy="45" r="2.5" fill="white" />
+                                <circle cx="60" cy="45" r="2.5" fill="white" />
+                            </g>
+                            <!-- Mouth starts as standard happy smile -->
+                            <path id="mascot-mouth" d="M44 56 Q50 64 56 56" fill="none" stroke="#1E293B" stroke-width="4" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <div class="bg-white p-2 md:p-3 rounded-xl md:rounded-2xl shadow-sm border border-slate-100 relative flex-grow min-w-0">
+                        <!-- Tiny Speech Bubble Arrow -->
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 w-0 h-0 border-t-6 border-t-transparent border-r-6 border-r-white border-b-6 border-b-transparent md:border-t-8 md:border-r-8 md:border-b-8"></div>
+                        <p id="mascot-hint" class="text-xs md:text-sm font-medium text-slate-600 truncate-2-lines line-clamp-2">Pilihlah satu jawaban yang paling benar ya!</p>
+                    </div>
+                </div>
+
+                <!-- Question and optional visual illustration -->
+                <div class="text-center py-1 md:py-3 space-y-1 md:space-y-2 shrink-0">
+                    <div id="quiz-emoji" class="text-4xl md:text-6xl animate-bounce-slow filter drop-shadow">🍎</div>
+                    <h3 id="question-text" class="text-xl md:text-2xl font-black text-slate-800 px-1 leading-snug">What fruit is this?</h3>
+                </div>
+
+                <!-- Multiple Choice Cards (Grid 2x2 Layout) -->
+                <div class="grid grid-cols-2 gap-2 md:gap-4 pr-1">
+                    <!-- Option 1 -->
+                    <button onclick="selectOption(0)" id="opt-0" class="option-btn btn-3d group text-left p-2.5 md:p-4 rounded-2xl border-b-4 md:border-b-8 border-2 bg-white hover:bg-amber-50 text-slate-800 font-bold text-xs sm:text-base md:text-lg flex items-center justify-between transition-all duration-100">
+                        <div class="flex items-center gap-1.5 md:gap-3">
+                            <span class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-100 group-hover:bg-amber-100 flex items-center justify-center font-black text-slate-500 border border-slate-200 text-xs md:text-base">A</span>
+                            <span class="option-label text-xs sm:text-base md:text-xl">Apple</span>
+                        </div>
+                        <div class="status-icon text-sm md:text-xl hidden"></div>
+                    </button>
+                    <!-- Option 2 -->
+                    <button onclick="selectOption(1)" id="opt-1" class="option-btn btn-3d group text-left p-2.5 md:p-4 rounded-2xl border-b-4 md:border-b-8 border-2 bg-white hover:bg-amber-50 text-slate-800 font-bold text-xs sm:text-base md:text-lg flex items-center justify-between transition-all duration-100">
+                        <div class="flex items-center gap-1.5 md:gap-3">
+                            <span class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-100 group-hover:bg-amber-100 flex items-center justify-center font-black text-slate-500 border border-slate-200 text-xs md:text-base">B</span>
+                            <span class="option-label text-xs sm:text-base md:text-xl">Banana</span>
+                        </div>
+                        <div class="status-icon text-sm md:text-xl hidden"></div>
+                    </button>
+                    <!-- Option 3 -->
+                    <button onclick="selectOption(2)" id="opt-2" class="option-btn btn-3d group text-left p-2.5 md:p-4 rounded-2xl border-b-4 md:border-b-8 border-2 bg-white hover:bg-amber-50 text-slate-800 font-bold text-xs sm:text-base md:text-lg flex items-center justify-between transition-all duration-100">
+                        <div class="flex items-center gap-1.5 md:gap-3">
+                            <span class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-100 group-hover:bg-amber-100 flex items-center justify-center font-black text-slate-500 border border-slate-200 text-xs md:text-base">C</span>
+                            <span class="option-label text-xs sm:text-base md:text-xl">Grape</span>
+                        </div>
+                        <div class="status-icon text-sm md:text-xl hidden"></div>
+                    </button>
+                    <!-- Option 4 -->
+                    <button onclick="selectOption(3)" id="opt-3" class="option-btn btn-3d group text-left p-2.5 md:p-4 rounded-2xl border-b-4 md:border-b-8 border-2 bg-white hover:bg-amber-50 text-slate-800 font-bold text-xs sm:text-base md:text-lg flex items-center justify-between transition-all duration-100">
+                        <div class="flex items-center gap-1.5 md:gap-3">
+                            <span class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-slate-100 group-hover:bg-amber-100 flex items-center justify-center font-black text-slate-500 border border-slate-200 text-xs md:text-base">D</span>
+                            <span class="option-label text-xs sm:text-base md:text-xl">Orange</span>
+                        </div>
+                        <div class="status-icon text-sm md:text-xl hidden"></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= RESULTS SCREEN ================= -->
+            <div id="results-screen" class="hidden text-center space-y-4 md:space-y-6 py-2 md:py-6">
+                <h2 class="text-2xl md:text-3xl font-black text-slate-800">🎉 Hore! Kamu Hebat! 🎉</h2>
+                <p class="text-slate-500 text-sm md:text-lg font-medium"><span id="user-display-name">Teman Pintar</span> telah menyelesaikan petualangan!</p>
+
+                <!-- Circular Score Indicator with Stars -->
+                <div class="relative w-32 h-32 md:w-48 md:h-48 mx-auto flex items-center justify-center transition-all">
+                    <div class="absolute inset-0 bg-brand-yellow/10 rounded-full animate-pulse"></div>
+                    <div class="absolute -top-3 md:-top-4 left-1/2 -translate-x-1/2 text-2xl md:text-4xl animate-bounce-slow">👑</div>
+                    <!-- Trophy/Medal SVG inside -->
+                    <div class="z-10 text-center">
+                        <span id="score-emoji" class="text-4xl md:text-6xl block mb-1">🥇</span>
+                        <span id="final-score-text" class="text-2xl md:text-4xl font-extrabold text-brand-pink block">50</span>
+                        <span class="text-[9px] md:text-xs uppercase font-extrabold text-slate-400">Poin Total</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 border-2 border-slate-100 p-3 md:p-4 rounded-2xl max-w-sm mx-auto">
+                    <p class="text-xs md:text-sm font-extrabold text-slate-500 mb-1">
+                        🎯 Kamu menjawab <span id="correct-count" class="text-brand-pink font-black text-sm md:text-base">0</span> dari <span id="total-count" class="text-brand-blue font-black text-sm md:text-base">0</span> soal dengan benar!
+                    </p>
+                    <p id="evaluation-message" class="text-sm md:text-base font-bold text-brand-purple">Luar biasa! Semua jawabanmu benar!</p>
+                </div>
+
+                <!-- Fun actions -->
+                <div class="flex flex-col sm:flex-row gap-2 md:gap-4 justify-center items-center">
+                    <button onclick="restartGame()" class="btn-3d bg-brand-pink hover:bg-rose-500 text-white font-extrabold text-base md:text-lg py-2.5 md:py-3 px-6 md:px-8 rounded-2xl border-b-6 md:border-b-8 border-rose-700 w-full sm:w-auto">
+                        <i class="fa-solid fa-rotate-left mr-2"></i> Main Lagi!
+                    </button>
+                    <button onclick="showReview()" id="review-btn" class="btn-3d bg-brand-blue hover:bg-sky-400 text-white font-extrabold text-base md:text-lg py-2.5 md:py-3 px-6 md:px-8 rounded-2xl border-b-6 md:border-b-8 border-sky-600 w-full sm:w-auto">
+                        <i class="fa-solid fa-list-check mr-2"></i> Lihat Jawaban
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= REVIEW SCREEN ================= -->
+            <div id="review-screen" class="hidden space-y-4">
+                <div class="flex items-center justify-between border-b pb-2 mb-2">
+                    <h3 class="text-xl md:text-2xl font-black text-slate-800">📝 Ulasan Kuis</h3>
+                    <button onclick="backToResults()" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+                </div>
+
+                <div id="review-list" class="space-y-3 max-h-48 md:max-h-96 overflow-y-auto pr-2">
+                    <!-- Dynamic items will be added here -->
+                </div>
+
+                <div class="text-center pt-2">
+                    <button onclick="backToResults()" class="btn-3d bg-slate-500 hover:bg-slate-600 text-white font-bold py-2 px-6 rounded-xl border-b-4 border-slate-700">
+                        Kembali ke Hasil
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Custom Exit Confirmation Modal -->
+        <div id="exit-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all duration-300">
+            <div class="bg-white rounded-3xl border-4 border-brand-pink/50 shadow-2xl p-6 max-w-sm w-full text-center scale-90 transition-transform duration-300 transform space-y-4 md:space-y-6">
+                <!-- Modal Header / Icon -->
+                <div class="relative w-24 h-24 mx-auto flex items-center justify-center">
+                    <div class="absolute inset-0 bg-rose-100 rounded-full animate-pulse"></div>
+                    <span class="text-5xl z-10 animate-bounce-slow">😢</span>
+                </div>
+                
+                <!-- Modal Body Text -->
+                <div class="space-y-2">
+                    <h3 class="text-2xl font-black text-slate-800">Keluar Kuis?</h3>
+                    <p class="text-slate-500 text-sm md:text-base font-bold leading-relaxed px-1">
+                        Apakah kamu yakin ingin mengakhiri kuis ini sekarang? Skor kamu saat ini akan ditampilkan!
+                    </p>
+                </div>
+
+                <!-- Modal Action Buttons -->
+                <div class="flex gap-3 justify-center items-center">
+                    <!-- Cancel / Continue Playing -->
+                    <button onclick="closeExitModal()" class="btn-3d flex-1 bg-brand-blue hover:bg-sky-400 text-white font-black text-sm md:text-base py-2.5 px-4 rounded-2xl border-b-6 border-sky-600">
+                        Lanjut Main 🚀
+                    </button>
+                    <!-- Confirm Exit -->
+                    <button onclick="confirmExit()" class="btn-3d flex-1 bg-brand-pink hover:bg-rose-500 text-white font-black text-sm md:text-base py-2.5 px-4 rounded-2xl border-b-6 border-rose-700">
+                        Ya, Selesai 👋
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Sound configuration and synthesizer (Web Audio API)
+        let audioCtx = null;
+        let isMuted = false;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (isMuted) return;
+            initAudio();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'correct') {
+                // Happy high ding-ding sound
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                gainNode.gain.setValueAtTime(0.15, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'incorrect') {
+                // Soft cartoonish "boing" sound
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now); // A3
+                osc.frequency.exponentialRampToValueAtTime(110, now + 0.3); // Drop frequency down
+                gainNode.gain.setValueAtTime(0.15, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'click') {
+                // Simple soft click
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } else if (type === 'victory') {
+                // Short triumphant fanfare
+                const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
+                notes.forEach((freq, idx) => {
+                    const oscNote = audioCtx.createOscillator();
+                    const gainNote = audioCtx.createGain();
+                    oscNote.connect(gainNote);
+                    gainNote.connect(audioCtx.destination);
+                    oscNote.type = 'sine';
+                    oscNote.frequency.value = freq;
+                    gainNote.gain.setValueAtTime(0.1, now + (idx * 0.1));
+                    gainNote.gain.exponentialRampToValueAtTime(0.01, now + (idx * 0.1) + 0.25);
+                    oscNote.start(now + (idx * 0.1));
+                    oscNote.stop(now + (idx * 0.1) + 0.3);
+                });
+            }
+        }
+
+        function toggleSound() {
+            isMuted = !isMuted;
+            const btn = document.getElementById('sound-btn');
+            if (isMuted) {
+                btn.innerHTML = '<i class="fa-solid fa-volume-xmark text-sm md:text-lg"></i>';
+                btn.classList.add('text-rose-400');
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-volume-high text-sm md:text-lg"></i>';
+                btn.classList.remove('text-rose-400');
+                playSound('click');
+            }
+        }
+
+        // ================= QUIZ DATA =================
+        // Ready-to-use database of toddler & kids vocabulary questions
+        const quizDatabase = [
+            {
+                question: "Apa arti dari 'Good morning'?",
+                emoji: "🌅",
+                hint: "Diucapkan di pagi hari saat matahari terbit.",
+                options: ["Selamat siang", "Selamat pagi", "Selamat malam (pertemuan)", "Selamat sore"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Selamat siang/sore'?",
+                emoji: "☀️",
+                hint: "Diucapkan setelah tengah hari sampai sore.",
+                options: ["Good night", "Good afternoon", "Good morning", "Good evening"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa arti dari 'Good evening'?",
+                emoji: "🌙",
+                hint: "Diucapkan ketika menyapa orang lain di malam hari (pertemuan).",
+                options: ["Selamat pagi", "Selamat siang/sore", "Selamat malam (perpisahan)", "Selamat malam (pertemuan)"],
+                correctIndex: 3
+            },
+            {
+                question: "Apa arti dari 'Good night'?",
+                emoji: "💤",
+                hint: "Diucapkan untuk berpisah di malam hari atau sebelum tidur.",
+                options: ["Selamat malam (perpisahan)", "Selamat malam (pertemuan)", "Selamat pagi", "Selamat sore"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa arti dari 'How are you'?",
+                emoji: "👋",
+                hint: "Pertanyaan untuk menanyakan kabar temanmu.",
+                options: ["Kamu di mana?", "Apa kabarmu?", "Kabarku baik", "Aku di rumah"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Kabarku baik'?",
+                emoji: "😊",
+                hint: "Jawaban saat seseorang menanyakan kabarmu.",
+                options: ["I am in my home", "How are you", "I am fine", "I am writing"],
+                correctIndex: 2
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Kamu di mana?'",
+                emoji: "📍",
+                hint: "Pertanyaan untuk menanyakan lokasi.",
+                options: ["Where are you", "How are you", "I am fine", "I am in my home"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa arti dari 'I am in my home'?",
+                emoji: "🏠",
+                hint: "Home artinya rumah.",
+                options: ["Aku di dapur", "Aku di rumah", "Kabarku baik", "Aku lagi menulis"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Menulis'?",
+                emoji: "✏️",
+                hint: "Aktivitas mencatat dengan pensil atau pulpen.",
+                options: ["Read", "Draw", "Write", "Erase"],
+                correctIndex: 2
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Membaca'?",
+                emoji: "📖",
+                hint: "Aktivitas melihat dan memahami isi buku.",
+                options: ["Read", "Sing", "Draw", "Write"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Menggambar'?",
+                emoji: "🎨",
+                hint: "Membuat gambar dengan krayon atau pensil warna.",
+                options: ["Sing", "Erase", "Draw", "Read"],
+                correctIndex: 2
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Menghapus'?",
+                emoji: "🧽",
+                hint: "Membersihkan coretan tulisan menggunakan penghapus.",
+                options: ["Write", "Erase", "Read", "Sing"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Bernyanyi'?",
+                emoji: "🎤",
+                hint: "Mengeluarkan suara bernada atau lagu.",
+                options: ["Sing", "Draw", "Erase", "Write"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa arti dari 'I am writing'?",
+                emoji: "📝",
+                hint: "Write artinya menulis, berakhiran -ing artinya sedang dilakukan.",
+                options: ["Aku lagi membaca", "Aku lagi menggambar", "Aku lagi menulis", "Aku lagi bernyanyi"],
+                correctIndex: 2
+            },
+            {
+                question: "Apa arti dari 'I am reading'?",
+                emoji: "📚",
+                hint: "Read artinya membaca.",
+                options: ["Aku lagi membaca", "Aku lagi menulis", "Aku lagi menghapus", "Aku lagi menggambar"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa arti dari 'I am drawing'?",
+                emoji: "🖌️",
+                hint: "Draw artinya menggambar.",
+                options: ["Aku lagi bernyanyi", "Aku lagi menggambar", "Aku lagi menghapus", "Aku lagi menulis"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa arti dari 'I am erasing'?",
+                emoji: "🧼",
+                hint: "Erase artinya menghapus.",
+                options: ["Aku lagi menghapus", "Aku lagi menulis", "Aku lagi membaca", "Aku lagi bernyanyi"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa arti dari 'I am singing'?",
+                emoji: "🎶",
+                hint: "Sing artinya bernyanyi.",
+                options: ["Aku lagi menggambar", "Aku lagi bernyanyi", "Aku lagi membaca", "Aku lagi menulis"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa arti dari 'Shoes'?",
+                emoji: "👟",
+                hint: "Alas kaki untuk sekolah.",
+                options: ["Kaos kaki", "Sepatu", "Dasi", "Topi"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Kaos kaki'?",
+                emoji: "🧦",
+                hint: "Dipakai sebelum memakai sepatu.",
+                options: ["Shoes", "Hat", "Socks", "Tie"],
+                correctIndex: 2
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Dasi'?",
+                emoji: "👔",
+                hint: "Aksesoris seragam sekolah yang melingkar di leher.",
+                options: ["Tie", "Socks", "Hat", "Shoes"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa arti dari 'Hat'?",
+                emoji: "🧢",
+                hint: "Dipakai di kepala.",
+                options: ["Sepatu", "Dasi", "Kaos kaki", "Topi"],
+                correctIndex: 3
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Kepala'?",
+                emoji: "🧑",
+                hint: "Bagian tubuh paling atas.",
+                options: ["Head", "Eye", "Nose", "Cheek"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Mata'?",
+                emoji: "👁️",
+                hint: "Anggota tubuh untuk melihat.",
+                options: ["Ear", "Cheek", "Eye", "Head"],
+                correctIndex: 2
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Hidung'?",
+                emoji: "👃",
+                hint: "Anggota tubuh untuk mencium bau.",
+                options: ["Nose", "Head", "Ear", "Cheek"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Pipi'?",
+                emoji: "😊",
+                hint: "Bagian wajah di kiri dan kanan hidung.",
+                options: ["Ear", "Cheek", "Eye", "Head"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Telinga'?",
+                emoji: "👂",
+                hint: "Anggota tubuh untuk mendengar.",
+                options: ["Head", "Nose", "Ear", "Eye"],
+                correctIndex: 2
+            },
+            {
+                question: "Arti dari kata tunjuk 'This' adalah...",
+                emoji: "📦",
+                hint: "Digunakan untuk benda dekat berjumlah satu.",
+                options: ["ini (1 benda)", "ini (lebih dari 1 benda)", "itu (1 benda)", "itu (lebih dari 1 benda)"],
+                correctIndex: 0
+            },
+            {
+                question: "Arti dari kata tunjuk 'These' adalah...",
+                emoji: "📦📦",
+                hint: "Digunakan untuk benda dekat berjumlah lebih dari satu.",
+                options: ["ini (1 benda)", "ini (lebih dari 1 benda)", "itu (1 benda)", "itu (lebih dari 1 benda)"],
+                correctIndex: 1
+            },
+            {
+                question: "Arti dari kata tunjuk 'That' adalah...",
+                emoji: "👈",
+                hint: "Digunakan untuk benda jauh berjumlah satu.",
+                options: ["ini (1 benda)", "ini (lebih dari 1 benda)", "itu (1 benda)", "itu (lebih dari 1 benda)"],
+                correctIndex: 2
+            },
+            {
+                question: "Arti dari kata tunjuk 'Those' adalah...",
+                emoji: "👈👈",
+                hint: "Digunakan untuk benda jauh berjumlah lebih dari satu.",
+                options: ["ini (1 benda)", "ini (lebih dari 1 benda)", "itu (1 benda)", "itu (lebih dari 1 benda)"],
+                correctIndex: 3
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Ini buku'?",
+                emoji: "📘",
+                hint: "Buku berjumlah satu dan dekat.",
+                options: ["these are books", "this is book", "that is book", "those are books"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Ini 5 pensil'?",
+                emoji: "✏️",
+                hint: "Pensil berjumlah banyak dan dekat.",
+                options: ["this is 5 pencils", "these are 5 pencils", "that is 5 pencils", "those are 5 pencils"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Itu penggaris'?",
+                emoji: "📏",
+                hint: "Penggaris berjumlah satu dan jauh.",
+                options: ["this is ruler", "these are rulers", "that is ruler", "those are rulers"],
+                correctIndex: 2
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Itu 4 penghapus'?",
+                emoji: "🧽",
+                hint: "Penghapus berjumlah banyak dan jauh.",
+                options: ["those are 4 erasers", "that is 4 erasers", "these are 4 erasers", "this is 4 erasers"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Itu mangga'?",
+                emoji: "🥭",
+                hint: "Itu (1 benda) = That is, mangga = mango.",
+                options: ["This is mango", "That is mango", "Those are mangoes", "These are mangoes"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Ini 2 melon'?",
+                emoji: "🍈",
+                hint: "Ini (lebih dari 1 benda) = these are.",
+                options: ["these are 2 melons", "this is 2 melons", "that is 2 melons", "those are 2 melons"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Aku punya 2 telinga'?",
+                emoji: "👂👂",
+                hint: "Aku punya = I have, 2 = two, telinga = ears.",
+                options: ["I have two eyes", "I have two ears", "I have two heads", "I have two cheeks"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Pensilku kotor'?",
+                emoji: "✏️",
+                hint: "Pensilku = My pencil, kotor = dirty.",
+                options: ["My pencil is clean", "My pencil is dirty", "This pencil is dirty", "This pencil is clean"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Ruang tamu'?",
+                emoji: "🛋️",
+                hint: "Ruang untuk menerima tamu.",
+                options: ["Living room", "Family room", "Bathroom", "Kitchen"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Ruang keluarga'?",
+                emoji: "📺",
+                hint: "Ruang berkumpul keluarga.",
+                options: ["Garage", "Kitchen", "Family room", "Bathroom"],
+                correctIndex: 2
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Kamar mandi'?",
+                emoji: "🛁",
+                hint: "Tempat membersihkan diri.",
+                options: ["Bathroom", "Bedroom", "Kitchen", "Garage"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Dapur'?",
+                emoji: "🍳",
+                hint: "Tempat memasak makanan.",
+                options: ["Bedroom", "Kitchen", "Garage", "Living room"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Garasi'?",
+                emoji: "🚗",
+                hint: "Tempat memarkir kendaraan.",
+                options: ["Bathroom", "Kitchen", "Garage", "Bedroom"],
+                correctIndex: 2
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Kamar tidur'?",
+                emoji: "🛏️",
+                hint: "Tempat tidur dan beristirahat.",
+                options: ["Bedroom", "Bathroom", "Kitchen", "Living room"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Bantal'?",
+                emoji: "⬜",
+                hint: "Alas kepala yang empuk saat tidur.",
+                options: ["Pillow", "Bolster", "Mattress", "Blanket"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Guling'?",
+                emoji: "🥖",
+                hint: "Bantal panjang yang dipeluk saat tidur.",
+                options: ["Bed sheet", "Blanket", "Bolster", "Wardrobe"],
+                correctIndex: 2
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Kasur'?",
+                emoji: "🛏️",
+                hint: "Alas tidur yang tebal di atas tempat tidur.",
+                options: ["Mattress", "Bed sheet", "Pillow", "Mirror"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Sprei'?",
+                emoji: "🛌",
+                hint: "Kain penutup kasur.",
+                options: ["Blanket", "Bed sheet", "Wardrobe", "Bolster"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Selimut'?",
+                emoji: "🧣",
+                hint: "Penghangat tubuh saat tidur.",
+                options: ["Blanket", "Bed sheet", "Mirror", "Pillow"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Tempat tidur'?",
+                emoji: "🛏️",
+                hint: "Bed artinya tempat tidur.",
+                options: ["Bed sheet", "Bed", "Wardrobe", "Mirror"],
+                correctIndex: 1
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Cermin'?",
+                emoji: "🪞",
+                hint: "Kaca untuk melihat diri sendiri.",
+                options: ["Mirror", "Wardrobe", "Mattress", "Pillow"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Itu sepatuku'?",
+                emoji: "👟",
+                hint: "Menggunakan kata tunjuk jamak (Those are) karena sepatu berpasangan.",
+                options: ["This is my shoe", "These are my shoes", "Those are my shoes", "That is my shoe"],
+                correctIndex: 2
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Aku lagi di dapur'?",
+                emoji: "🍳",
+                hint: "Aku lagi di dapur = I am in kitchen.",
+                options: ["I am in kitchen", "I am in bedroom", "I am in garage", "I am in living room"],
+                correctIndex: 0
+            },
+            {
+                question: "Apa Bahasa Inggris dari 'Hidungku bersih'?",
+                emoji: "👃",
+                hint: "Hidungku = My nose, bersih = clean.",
+                options: ["My nose is clean", "My nose is dirty", "My cheek is clean", "My eye is clean"],
+                correctIndex: 0
+            }
+        ];
+
+        // ================= STATE MANAGEMENT =================
+        let activeQuestions = [];
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let playerName = "Teman Pintar";
+        let userAnswers = []; // Records: { question, options, correctIdx, chosenIdx }
+        let hasAnsweredCurrent = false;
+        let autoTransitionTimer = null; // Timer untuk perpindahan otomatis ke soal berikutnya
+
+        // Mascot SVG dynamic path changes for reaction facial expressions
+        const mascotQuizSVG = document.getElementById('mascot-quiz');
+        const mascotMouth = document.getElementById('mascot-mouth');
+        const mascotEyes = document.getElementById('mascot-eyes');
+
+        function setMascotMood(mood) {
+            if (mood === 'thinking') {
+                // Normal cheerful smile and neutral eyes
+                mascotMouth.setAttribute('d', 'M44 56 Q50 64 56 56');
+                mascotMouth.setAttribute('fill', 'none');
+                mascotEyes.innerHTML = `
+                    <circle cx="38" cy="48" r="6" fill="#1E293B" />
+                    <circle cx="62" cy="48" r="6" fill="#1E293B" />
+                    <circle cx="36" cy="45" r="2.5" fill="white" />
+                    <circle cx="60" cy="45" r="2.5" fill="white" />
+                `;
+            } else if (mood === 'correct') {
+                // Super happy big open mouth & closed happy eyes (curves)
+                mascotMouth.setAttribute('d', 'M40 56 Q50 68 60 56 Z');
+                mascotMouth.setAttribute('fill', '#EF4444');
+                mascotEyes.innerHTML = `
+                    <path d="M32 50 Q38 42 44 50" fill="none" stroke="#1E293B" stroke-width="4" stroke-linecap="round" />
+                    <path d="M56 50 Q62 42 68 50" fill="none" stroke="#1E293B" stroke-width="4" stroke-linecap="round" />
+                `;
+            } else if (mood === 'incorrect') {
+                // Sad mouth curve and slightly squinty/sad eyes
+                mascotMouth.setAttribute('d', 'M44 62 Q50 54 56 62');
+                mascotMouth.setAttribute('fill', 'none');
+                mascotEyes.innerHTML = `
+                    <circle cx="38" cy="48" r="6" fill="#1E293B" />
+                    <circle cx="62" cy="48" r="6" fill="#1E293B" />
+                    <line x1="32" y1="42" x2="44" y2="46" stroke="#1E293B" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="68" y1="42" x2="56" y2="46" stroke="#1E293B" stroke-width="3" stroke-linecap="round"/>
+                `;
+            }
+        }
+
+        // Shuffle helper using Fisher-Yates
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function startGame() {
+            initAudio();
+            playSound('click');
+
+            const nameInput = document.getElementById('player-name').value.trim();
+            if (nameInput) {
+                playerName = nameInput;
+            } else {
+                playerName = "Teman Pintar";
+            }
+
+            document.getElementById('user-display-name').textContent = playerName;
+
+            // Hentikan timer aktif jika ada saat restart kuis
+            if (autoTransitionTimer) {
+                clearTimeout(autoTransitionTimer);
+            }
+
+            // Randomize questions for this run (select 50)
+            const shuffledDB = shuffle([...quizDatabase]);
+            activeQuestions = shuffledDB.slice(0, 50); // 50 Questions per game session
+
+            currentQuestionIdx = 0;
+            score = 0;
+            userAnswers = [];
+
+            // UI transitions
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('results-screen').classList.add('hidden');
+            document.getElementById('review-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            hasAnsweredCurrent = false;
+            setMascotMood('thinking');
+
+            const q = activeQuestions[currentQuestionIdx];
+
+            // Update Header & Tracker
+            document.getElementById('score-text').textContent = score + " Poin";
+            document.getElementById('question-tracker').textContent = `${currentQuestionIdx + 1} dari ${activeQuestions.length}`;
+            
+            // Calc dynamic progress bar
+            const percent = ((currentQuestionIdx + 1) / activeQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = percent + "%";
+
+            // Mascot Tip
+            document.getElementById('mascot-hint').textContent = q.hint;
+
+            // Big Card Emoji and Text
+            document.getElementById('quiz-emoji').textContent = q.emoji;
+            document.getElementById('question-text').textContent = q.question;
+
+            // Color palette themes for our options buttons to keep them super bright and attractive
+            const borderColors = [
+                { border: 'border-yellow-400', hover: 'hover:bg-yellow-50', active: 'border-yellow-600', text: 'text-yellow-600', bg: 'bg-yellow-100' },
+                { border: 'border-pink-400', hover: 'hover:bg-pink-50', active: 'border-pink-600', text: 'text-pink-600', bg: 'bg-pink-100' },
+                { border: 'border-blue-400', hover: 'hover:bg-blue-50', active: 'border-blue-600', text: 'text-blue-600', bg: 'bg-blue-100' },
+                { border: 'border-purple-400', hover: 'hover:bg-purple-50', active: 'border-purple-600', text: 'text-purple-600', bg: 'bg-purple-100' }
+            ];
+
+            // Render options
+            for (let i = 0; i < 4; i++) {
+                const optBtn = document.getElementById(`opt-${i}`);
+                const optLabel = optBtn.querySelector('.option-label');
+                const statusIcon = optBtn.querySelector('.status-icon');
+                const letterBadge = optBtn.querySelector('span:first-child');
+
+                // Set option text
+                optLabel.textContent = q.options[i];
+                
+                // Clear old visual correct/incorrect feedback states
+                optBtn.className = "option-btn btn-3d group text-left p-2.5 md:p-4 rounded-2xl border-b-4 md:border-b-8 border-2 bg-white text-slate-800 font-bold text-xs sm:text-base md:text-lg flex items-center justify-between transition-all duration-100";
+                
+                // Apply playful randomized themed borders
+                const theme = borderColors[i];
+                optBtn.classList.add(theme.border, theme.hover);
+                
+                letterBadge.className = `w-6 h-6 md:w-8 md:h-8 rounded-full ${theme.bg} ${theme.text} flex items-center justify-center font-black border border-transparent text-xs md:text-base`;
+
+                statusIcon.innerHTML = '';
+                statusIcon.classList.add('hidden');
+                
+                optBtn.disabled = false;
+            }
+        }
+
+        function selectOption(index) {
+            if (hasAnsweredCurrent) return;
+            hasAnsweredCurrent = true;
+
+            const q = activeQuestions[currentQuestionIdx];
+            const isCorrect = (index === q.correctIndex);
+
+            userAnswers.push({
+                question: q.question,
+                emoji: q.emoji,
+                options: q.options,
+                correctIdx: q.correctIndex,
+                chosenIdx: index
+            });
+
+            // Disable all buttons immediately
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`opt-${i}`).disabled = true;
+            }
+
+            const chosenBtn = document.getElementById(`opt-${index}`);
+            const statusIcon = chosenBtn.querySelector('.status-icon');
+
+            if (isCorrect) {
+                // Correct Choice
+                score += Math.round(100 / activeQuestions.length); // Dynamic points per correct answer
+
+                playSound('correct');
+                setMascotMood('correct');
+                document.getElementById('mascot-hint').innerHTML = `
+                    <div class="space-y-0.5">
+                        <p class="font-extrabold text-emerald-600 text-xs md:text-sm">YEEEY! Jawabanmu TEPAT sekali! Kamu hebat! 🎉</p>
+                        <p class="text-[10px] text-slate-400 font-medium animate-pulse">Menuju soal berikutnya otomatis dalam 3 detik... ⏱️</p>
+                    </div>
+                `;
+                
+                // Confetti bursts dynamically on screen!
+                triggerMiniConfetti();
+
+                // Style the button as Correct (Green Theme)
+                chosenBtn.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-800');
+                chosenBtn.classList.remove('hover:bg-amber-50');
+                statusIcon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500 text-xl md:text-2xl"></i>';
+                statusIcon.classList.remove('hidden');
+
+            } else {
+                // Incorrect Choice
+                playSound('incorrect');
+                setMascotMood('incorrect');
+                document.getElementById('mascot-hint').innerHTML = `
+                    <div class="space-y-0.5">
+                        <p class="font-extrabold text-rose-500 text-xs md:text-sm">Oh no, hampir tepat! Tetap semangat ya! 💪</p>
+                        <p class="text-[10px] text-slate-400 font-medium animate-pulse">Menuju soal berikutnya otomatis dalam 3 detik... ⏱️</p>
+                    </div>
+                `;
+
+                // Shake animation on chosen button
+                chosenBtn.classList.add('shake', 'bg-rose-50', 'border-rose-500', 'text-rose-800');
+                statusIcon.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-500 text-xl md:text-2xl"></i>';
+                statusIcon.classList.remove('hidden');
+
+                // Highlight correct answer gently
+                const correctBtn = document.getElementById(`opt-${q.correctIndex}`);
+                correctBtn.classList.add('bg-emerald-50', 'border-emerald-500');
+            }
+
+            document.getElementById('score-text').textContent = score + " Poin";
+
+            // Transisi otomatis ke soal berikutnya setelah 3 detik (3000ms)
+            autoTransitionTimer = setTimeout(() => {
+                nextQuestion();
+            }, 3000);
+        }
+
+        function triggerMiniConfetti() {
+            confetti({
+                particleCount: 50,
+                spread: 60,
+                origin: { y: 0.7 }
+            });
+        }
+
+        function triggerGrandConfetti() {
+            var duration = 3 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            currentQuestionIdx++;
+            if (currentQuestionIdx < activeQuestions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function confirmEndSession() {
+            playSound('click');
+            const modal = document.getElementById('exit-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.bg-white').classList.remove('scale-90');
+                modal.querySelector('.bg-white').classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeExitModal() {
+            playSound('click');
+            const modal = document.getElementById('exit-modal');
+            modal.querySelector('.bg-white').classList.remove('scale-100');
+            modal.querySelector('.bg-white').classList.add('scale-90');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 150);
+        }
+
+        function confirmExit() {
+            playSound('click');
+            const modal = document.getElementById('exit-modal');
+            modal.classList.add('hidden');
+            showResults();
+        }
+
+        function showResults() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('results-screen').classList.remove('hidden');
+
+            playSound('victory');
+            triggerGrandConfetti();
+
+            // Set final score representation
+            document.getElementById('final-score-text').textContent = score;
+
+            // Calculate correct answers count based on recorded user answers
+            const correctCount = userAnswers.filter(ans => ans.chosenIdx === ans.correctIdx).length;
+            const totalCount = activeQuestions.length;
+
+            // Update stats in the HTML template
+            document.getElementById('correct-count').textContent = correctCount;
+            document.getElementById('total-count').textContent = totalCount;
+
+            // Friendly custom rewards evaluation
+            const emojiSpan = document.getElementById('score-emoji');
+            const evalMsg = document.getElementById('evaluation-message');
+
+            if (score === 100) {
+                emojiSpan.textContent = "🏆";
+                evalMsg.textContent = `LUAR BIASA PERFECT, ${playerName}! Kamu adalah Sang Juara Bahasa Inggris! 🌟✨`;
+            } else if (score >= 60) {
+                emojiSpan.textContent = "🥈";
+                evalMsg.textContent = `HEBAT SEKALI, ${playerName}! Sedikit lagi kamu akan mendapatkan nilai sempurna! Ayo coba lagi! 👏`;
+            } else {
+                emojiSpan.textContent = "🥉";
+                evalMsg.textContent = `Bagus sekali sudah mencoba, ${playerName}! Jangan menyerah, ayo belajar lagi bersama Sparky! 🤗`;
+            }
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        function showReview() {
+            playSound('click');
+            document.getElementById('results-screen').classList.add('hidden');
+            document.getElementById('review-screen').classList.remove('hidden');
+
+            const reviewList = document.getElementById('review-list');
+            reviewList.innerHTML = '';
+
+            userAnswers.forEach((ans, idx) => {
+                const isCorrect = (ans.chosenIdx === ans.correctIdx);
+                const reviewItem = document.createElement('div');
+                reviewItem.className = `p-3 md:p-4 rounded-2xl border-2 ${isCorrect ? 'bg-emerald-50/50 border-emerald-100' : 'bg-rose-50/50 border-rose-100'} space-y-2`;
+
+                reviewItem.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl md:text-3xl">${ans.emoji}</span>
+                        <div class="flex-grow min-w-0">
+                            <p class="text-[10px] text-slate-400 font-bold">PERTANYAAN ${idx + 1}</p>
+                            <h4 class="font-extrabold text-slate-800 text-sm md:text-base truncate">${ans.question}</h4>
+                        </div>
+                        <div class="shrink-0">
+                            ${isCorrect 
+                                ? '<span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] md:text-xs font-black rounded-full">BENAR</span>' 
+                                : '<span class="px-2 py-0.5 bg-rose-100 text-rose-700 text-[10px] md:text-xs font-black rounded-full">KURANG TEPAT</span>'}
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs md:text-sm font-semibold pt-1">
+                        <div class="p-2 rounded-xl bg-white border border-slate-100 flex items-center gap-1.5 min-w-0">
+                            <span class="text-slate-400 text-[10px] md:text-xs shrink-0">Jawabanmu:</span>
+                            <span class="${isCorrect ? 'text-emerald-600' : 'text-rose-600'} font-bold truncate">${ans.options[ans.chosenIdx]}</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-white border border-slate-100 flex items-center gap-1.5 min-w-0">
+                            <span class="text-slate-400 text-[10px] md:text-xs shrink-0">Kunci Jawaban:</span>
+                            <span class="text-emerald-600 font-bold truncate">${ans.options[ans.correctIdx]}</span>
+                        </div>
+                    </div>
+                `;
+                reviewList.appendChild(reviewItem);
+            });
+        }
+
+        function backToResults() {
+            playSound('click');
+            document.getElementById('review-screen').classList.add('hidden');
+            document.getElementById('results-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
