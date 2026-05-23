@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Canvas Confetti for victory celebration -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- html2pdf.js for downloading PDF reports -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -416,6 +418,9 @@
                     </button>
                     <button onclick="showReview()" id="review-btn" class="btn-3d bg-brand-blue hover:bg-sky-400 text-white font-extrabold text-base md:text-lg py-2.5 md:py-3 px-6 md:px-8 rounded-2xl border-b-6 md:border-b-8 border-sky-600 w-full sm:w-auto">
                         <i class="fa-solid fa-list-check mr-2"></i> Lihat Jawaban
+                    </button>
+                    <button onclick="downloadPDF()" id="download-btn" class="btn-3d bg-brand-green hover:bg-emerald-400 text-slate-800 font-extrabold text-base md:text-lg py-2.5 md:py-3 px-6 md:px-8 rounded-2xl border-b-6 md:border-b-8 border-emerald-600 w-full sm:w-auto">
+                        <i class="fa-solid fa-file-pdf mr-2"></i> Unduh PDF
                     </button>
                 </div>
             </div>
@@ -1322,6 +1327,108 @@
             playSound('click');
             document.getElementById('review-screen').classList.add('hidden');
             document.getElementById('results-screen').classList.remove('hidden');
+        }
+
+        function downloadPDF() {
+            if (userAnswers.length === 0) {
+                alert("Kamu belum menjawab soal apa pun! Mainkan kuis terlebih dahulu untuk mengunduh hasil.");
+                return;
+            }
+
+            playSound('click');
+            const btn = document.getElementById('download-btn');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i> Mengunduh...';
+            btn.disabled = true;
+
+            // Create temporary element for PDF layout
+            const element = document.createElement('div');
+            element.style.padding = '25px';
+            element.style.fontFamily = "'Fredoka', 'sans-serif'";
+            element.style.color = '#334155';
+
+            let contentHtml = `
+                <div style="text-align: center; border-bottom: 3px dashed #4CC9FE; padding-bottom: 15px; margin-bottom: 20px;">
+                    <h1 style="font-size: 26px; color: #FF4E88; margin: 0; font-weight: bold;">🎈 Kids English Quest! 🎈</h1>
+                    <p style="font-size: 14px; color: #64748B; margin: 5px 0 0 0; font-weight: 500;">Laporan Hasil Kuis Bahasa Inggris</p>
+                </div>
+                
+                <div style="background-color: #F8FAFC; border: 2px solid #E2E8F0; padding: 15px; border-radius: 16px; margin-bottom: 25px;">
+                    <table style="width: 100%; font-size: 13px; font-weight: 600; color: #1E293B; border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 120px; padding: 4px 0; color: #64748B;">Nama Pemain</td>
+                            <td style="padding: 4px 0;">: <span style="color: #FF4E88; font-weight: bold;">${playerName}</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px 0; color: #64748B;">Skor Akhir</td>
+                            <td style="padding: 4px 0;">: <span style="color: #4CC9FE; font-weight: bold;">${score} Poin</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px 0; color: #64748B;">Jawaban Benar</td>
+                            <td style="padding: 4px 0;">: <span style="color: #10B981; font-weight: bold;">${userAnswers.filter(ans => ans.chosenIdx === ans.correctIdx).length}</span> dari <span style="color: #3B82F6; font-weight: bold;">${userAnswers.length}</span> soal</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <h3 style="font-size: 16px; color: #1E293B; margin: 0 0 15px 0; font-weight: bold; border-bottom: 2px solid #E2E8F0; padding-bottom: 5px;">📝 Ringkasan Jawaban:</h3>
+                <div>
+            `;
+
+            userAnswers.forEach((ans, idx) => {
+                const isCorrect = (ans.chosenIdx === ans.correctIdx);
+                contentHtml += `
+                    <div style="padding: 12px; border-radius: 12px; border: 1.5px solid ${isCorrect ? '#A7F3D0' : '#FECACA'}; background-color: ${isCorrect ? '#ECFDF5' : '#FEF2F2'}; margin-bottom: 10px; page-break-inside: avoid;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="font-weight: bold; font-size: 13px; color: #1E293B; padding-bottom: 6px;">
+                                    Soal ${idx + 1}: ${ans.emoji} ${ans.question}
+                                </td>
+                                <td style="text-align: right; width: 80px; vertical-align: top; padding-bottom: 6px;">
+                                    <span style="font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 9999px; background-color: ${isCorrect ? '#D1FAE5' : '#FEE2E2'}; color: ${isCorrect ? '#065F46' : '#991B1B'};">
+                                        ${isCorrect ? 'BENAR' : 'SALAH'}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="font-size: 12px; color: #475569;">
+                                    <span style="color: #64748B;">Jawabanmu:</span> 
+                                    <strong style="color: ${isCorrect ? '#059669' : '#DC2626'};">${ans.options[ans.chosenIdx]}</strong>
+                                    <span style="margin: 0 10px; color: #CBD5E1;">|</span>
+                                    <span style="color: #64748B;">Kunci Jawaban:</span> 
+                                    <strong style="color: #059669;">${ans.options[ans.correctIdx]}</strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                `;
+            });
+
+            contentHtml += `
+                </div>
+                <div style="margin-top: 30px; text-align: center; font-size: 10px; color: #94A3B8; border-top: 1.5px solid #E2E8F0; padding-top: 15px;">
+                    Laporan hasil belajar ini dibuat secara otomatis oleh Kids English Quest! pada ${new Date().toLocaleString('id-ID')}. Keep learning! 🌟
+                </div>
+            `;
+
+            element.innerHTML = contentHtml;
+
+            const opt = {
+                margin:       12,
+                filename:     `Hasil_Kuis_${playerName.replace(/\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Generate PDF and handle button state
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }).catch(err => {
+                console.error("Gagal membuat PDF:", err);
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            });
         }
     </script>
 </body>
