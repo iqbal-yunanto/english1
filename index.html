@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Fun Quiz for Kids! 🌟</title>
+    <title>English with om Bale 🌟</title>
     <!-- Tailwind CSS for modern, playful layout -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Font "Fredoka" - perfect for kids, rounded and friendly -->
@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Canvas Confetti for victory celebration -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- html2pdf.js for downloading PDF reports -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- jsPDF for direct PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -37,6 +37,28 @@
     </script>
 
     <style>
+        /* Print Stylesheet for PDF Report */
+        @media print {
+            body {
+                background: white !important;
+                background-image: none !important;
+            }
+            body * {
+                visibility: hidden;
+            }
+            #print-section, #print-section * {
+                visibility: visible;
+            }
+            #print-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 10mm;
+            }
+        }
+
         /* Custom playful bouncy animations */
         @keyframes bounce-slow {
             0%, 100% { transform: translateY(0); }
@@ -225,7 +247,7 @@
         <div class="absolute -top-6 -left-6 w-16 h-16 bg-white/20 rounded-full blur-lg"></div>
         <div class="absolute -bottom-6 -right-6 w-24 h-24 bg-white/20 rounded-full blur-lg"></div>
         <h1 class="text-2xl md:text-4xl font-extrabold tracking-wide drop-shadow-md animate-bounce-slow">
-            🎈 Kids English Quest! ✨
+            🎈 English with om Bale ✨
         </h1>
         <p class="text-xs md:text-base font-medium opacity-90 mt-1">Ayo belajar Bahasa Inggris dengan ceria! 🌟</p>
     </header>
@@ -419,9 +441,6 @@
                     <button onclick="showReview()" id="review-btn" class="btn-3d bg-brand-blue hover:bg-sky-400 text-white font-extrabold text-base md:text-lg py-2.5 md:py-3 px-6 md:px-8 rounded-2xl border-b-6 md:border-b-8 border-sky-600 w-full sm:w-auto">
                         <i class="fa-solid fa-list-check mr-2"></i> Lihat Jawaban
                     </button>
-                    <button onclick="downloadPDF()" id="download-btn" class="btn-3d bg-brand-green hover:bg-emerald-400 text-slate-800 font-extrabold text-base md:text-lg py-2.5 md:py-3 px-6 md:px-8 rounded-2xl border-b-6 md:border-b-8 border-emerald-600 w-full sm:w-auto">
-                        <i class="fa-solid fa-file-pdf mr-2"></i> Unduh PDF
-                    </button>
                 </div>
             </div>
 
@@ -436,9 +455,12 @@
                     <!-- Dynamic items will be added here -->
                 </div>
 
-                <div class="text-center pt-2">
-                    <button onclick="backToResults()" class="btn-3d bg-slate-500 hover:bg-slate-600 text-white font-bold py-2 px-6 rounded-xl border-b-4 border-slate-700">
+                <div class="flex flex-col sm:flex-row gap-3 justify-center items-center pt-2">
+                    <button onclick="backToResults()" class="btn-3d bg-slate-500 hover:bg-slate-600 text-white font-bold py-2 px-6 rounded-xl border-b-4 border-slate-700 w-full sm:w-auto">
                         Kembali ke Hasil
+                    </button>
+                    <button onclick="downloadPDF(this)" class="btn-3d bg-brand-green hover:bg-emerald-400 text-slate-800 font-bold py-2 px-6 rounded-xl border-b-4 border-emerald-600 w-full sm:w-auto">
+                        <i class="fa-solid fa-file-pdf mr-2"></i> Unduh PDF
                     </button>
                 </div>
             </div>
@@ -958,6 +980,8 @@
         let userAnswers = []; // Records: { question, options, correctIdx, chosenIdx }
         let hasAnsweredCurrent = false;
         let autoTransitionTimer = null; // Timer untuk perpindahan otomatis ke soal berikutnya
+        let gameStartTime = null;
+        let gameDurationText = "";
 
         // Mascot SVG dynamic path changes for reaction facial expressions
         const mascotQuizSVG = document.getElementById('mascot-quiz');
@@ -1024,6 +1048,9 @@
             if (autoTransitionTimer) {
                 clearTimeout(autoTransitionTimer);
             }
+
+            // Record start time
+            gameStartTime = Date.now();
 
             // Randomize questions for this run (select 50)
             const shuffledDB = shuffle([...quizDatabase]);
@@ -1250,6 +1277,21 @@
             playSound('victory');
             triggerGrandConfetti();
 
+            // Calculate duration
+            if (gameStartTime) {
+                const durationMs = Date.now() - gameStartTime;
+                const totalSeconds = Math.floor(durationMs / 1000);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                if (minutes > 0) {
+                    gameDurationText = `${minutes} Menit ${seconds} Detik`;
+                } else {
+                    gameDurationText = `${seconds} Detik`;
+                }
+            } else {
+                gameDurationText = "-";
+            }
+
             // Calculate correct answers count based on recorded user answers
             const correctCount = userAnswers.filter(ans => ans.chosenIdx === ans.correctIdx).length;
             const totalCount = userAnswers.length;
@@ -1329,106 +1371,183 @@
             document.getElementById('results-screen').classList.remove('hidden');
         }
 
-        function downloadPDF() {
+        function downloadPDF(btn) {
             if (userAnswers.length === 0) {
-                alert("Kamu belum menjawab soal apa pun! Mainkan kuis terlebih dahulu untuk mengunduh hasil.");
+                alert("Kamu belum menjawab soal apa pun! Mainkan kuis terlebih dahulu.");
                 return;
             }
 
             playSound('click');
-            const btn = document.getElementById('download-btn');
             const originalContent = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i> Mengunduh...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i> Menyiapkan...';
             btn.disabled = true;
 
-            // Create temporary element for PDF layout
-            const element = document.createElement('div');
-            element.style.padding = '25px';
-            element.style.fontFamily = "'Fredoka', 'sans-serif'";
-            element.style.color = '#334155';
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
 
-            let contentHtml = `
-                <div style="text-align: center; border-bottom: 3px dashed #4CC9FE; padding-bottom: 15px; margin-bottom: 20px;">
-                    <h1 style="font-size: 26px; color: #FF4E88; margin: 0; font-weight: bold;">🎈 Kids English Quest! 🎈</h1>
-                    <p style="font-size: 14px; color: #64748B; margin: 5px 0 0 0; font-weight: 500;">Laporan Hasil Kuis Bahasa Inggris</p>
-                </div>
+                let y = 20;
+
+                // Header Background (Light blue banner)
+                doc.setFillColor(240, 253, 255); // #F0FDFF
+                doc.roundedRect(15, y, 180, 25, 4, 4, 'F');
+
+                // Header Text
+                doc.setTextColor(255, 78, 136); // Brand Pink (#FF4E88)
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(22);
+                doc.text("English with om Bale", 105, y + 10, { align: "center" });
+
+                doc.setTextColor(100, 116, 139); // Slate 500
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.text("Laporan Hasil Kuis Bahasa Inggris", 105, y + 18, { align: "center" });
+
+                y += 35;
+
+                // Info Box Background
+                doc.setFillColor(248, 250, 252); // Slate 50
+                doc.setDrawColor(226, 232, 240); // Slate 200
+                doc.roundedRect(15, y, 180, 48, 4, 4, 'FD');
+
+                // Info Box Details
+                doc.setFontSize(11);
+                doc.setTextColor(71, 85, 105); // Slate 600
                 
-                <div style="background-color: #F8FAFC; border: 2px solid #E2E8F0; padding: 15px; border-radius: 16px; margin-bottom: 25px;">
-                    <table style="width: 100%; font-size: 13px; font-weight: 600; color: #1E293B; border-collapse: collapse;">
-                        <tr>
-                            <td style="width: 120px; padding: 4px 0; color: #64748B;">Nama Pemain</td>
-                            <td style="padding: 4px 0;">: <span style="color: #FF4E88; font-weight: bold;">${playerName}</span></td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 4px 0; color: #64748B;">Skor Akhir</td>
-                            <td style="padding: 4px 0;">: <span style="color: #4CC9FE; font-weight: bold;">${score} Poin</span></td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 4px 0; color: #64748B;">Jawaban Benar</td>
-                            <td style="padding: 4px 0;">: <span style="color: #10B981; font-weight: bold;">${userAnswers.filter(ans => ans.chosenIdx === ans.correctIdx).length}</span> dari <span style="color: #3B82F6; font-weight: bold;">${userAnswers.length}</span> soal</td>
-                        </tr>
-                    </table>
-                </div>
+                doc.setFont("helvetica", "bold");
+                doc.text("Nama Pemain", 25, y + 10);
+                doc.text("Skor Akhir", 25, y + 18);
+                doc.text("Jawaban Benar", 25, y + 26);
+                doc.text("Durasi Pengerjaan", 25, y + 34);
+                doc.text("Waktu Selesai", 25, y + 42);
+
+                doc.setFont("helvetica", "normal");
+                doc.text(`:  ${playerName}`, 60, y + 10);
+                doc.text(`:  ${score} Poin`, 60, y + 18);
                 
-                <h3 style="font-size: 16px; color: #1E293B; margin: 0 0 15px 0; font-weight: bold; border-bottom: 2px solid #E2E8F0; padding-bottom: 5px;">📝 Ringkasan Jawaban:</h3>
-                <div>
-            `;
+                const correctCount = userAnswers.filter(ans => ans.chosenIdx === ans.correctIdx).length;
+                doc.text(`:  ${correctCount} dari ${userAnswers.length} soal`, 60, y + 26);
+                doc.text(`:  ${gameDurationText}`, 60, y + 34);
 
-            userAnswers.forEach((ans, idx) => {
-                const isCorrect = (ans.chosenIdx === ans.correctIdx);
-                contentHtml += `
-                    <div style="padding: 12px; border-radius: 12px; border: 1.5px solid ${isCorrect ? '#A7F3D0' : '#FECACA'}; background-color: ${isCorrect ? '#ECFDF5' : '#FEF2F2'}; margin-bottom: 10px; page-break-inside: avoid;">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <tr>
-                                <td style="font-weight: bold; font-size: 13px; color: #1E293B; padding-bottom: 6px;">
-                                    Soal ${idx + 1}: ${ans.emoji} ${ans.question}
-                                </td>
-                                <td style="text-align: right; width: 80px; vertical-align: top; padding-bottom: 6px;">
-                                    <span style="font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 9999px; background-color: ${isCorrect ? '#D1FAE5' : '#FEE2E2'}; color: ${isCorrect ? '#065F46' : '#991B1B'};">
-                                        ${isCorrect ? 'BENAR' : 'SALAH'}
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="font-size: 12px; color: #475569;">
-                                    <span style="color: #64748B;">Jawabanmu:</span> 
-                                    <strong style="color: ${isCorrect ? '#059669' : '#DC2626'};">${ans.options[ans.chosenIdx]}</strong>
-                                    <span style="margin: 0 10px; color: #CBD5E1;">|</span>
-                                    <span style="color: #64748B;">Kunci Jawaban:</span> 
-                                    <strong style="color: #059669;">${ans.options[ans.correctIdx]}</strong>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                `;
-            });
+                const timestampStr = new Date().toLocaleString('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                }).replace(/\./g, ':');
+                doc.text(`:  ${timestampStr}`, 60, y + 42);
 
-            contentHtml += `
-                </div>
-                <div style="margin-top: 30px; text-align: center; font-size: 10px; color: #94A3B8; border-top: 1.5px solid #E2E8F0; padding-top: 15px;">
-                    Laporan hasil belajar ini dibuat secara otomatis oleh Kids English Quest! pada ${new Date().toLocaleString('id-ID')}. Keep learning! 🌟
-                </div>
-            `;
+                y += 61;
 
-            element.innerHTML = contentHtml;
+                // Section Title: Ringkasan Jawaban
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(13);
+                doc.setTextColor(30, 41, 59); // Slate 800
+                doc.text("Ringkasan Jawaban:", 15, y);
+                doc.line(15, y + 2, 195, y + 2);
 
-            const opt = {
-                margin:       12,
-                filename:     `Hasil_Kuis_${playerName.replace(/\s+/g, '_')}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
+                y += 10;
 
-            // Generate PDF and handle button state
-            html2pdf().set(opt).from(element).save().then(() => {
-                btn.innerHTML = originalContent;
-                btn.disabled = false;
-            }).catch(err => {
+                // Loop answers
+                userAnswers.forEach((ans, idx) => {
+                    const isCorrect = (ans.chosenIdx === ans.correctIdx);
+
+                    // Check page break
+                    if (y > 260) {
+                        doc.addPage();
+                        y = 20;
+                    }
+
+                    // Answer Box Background
+                    if (isCorrect) {
+                        doc.setFillColor(236, 253, 245); // Emerald 50
+                        doc.setDrawColor(167, 243, 208); // Emerald 200
+                    } else {
+                        doc.setFillColor(254, 242, 242); // Rose 50
+                        doc.setDrawColor(254, 202, 202); // Rose 200
+                    }
+                    
+                    doc.roundedRect(15, y, 180, 20, 3, 3, 'FD');
+
+                    // Question Text
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(10);
+                    doc.setTextColor(30, 41, 59); // Slate 800
+                    // Remove emojis to avoid PDF rendering errors
+                    const cleanQuestion = ans.question.replace(/[^\x00-\x7F]/g, "").trim();
+                    doc.text(`Soal ${idx + 1}: ${cleanQuestion}`, 20, y + 7);
+
+                    // Badge (Benar / Salah)
+                    if (isCorrect) {
+                        doc.setFillColor(209, 250, 229); // Emerald 100
+                        doc.setTextColor(6, 95, 70); // Emerald 800
+                        doc.roundedRect(165, y + 3, 25, 5, 1, 1, 'F');
+                        doc.setFontSize(8);
+                        doc.text("BENAR", 177.5, y + 6.5, { align: "center" });
+                    } else {
+                        doc.setFillColor(254, 226, 226); // Rose 100
+                        doc.setTextColor(153, 27, 27); // Rose 800
+                        doc.roundedRect(165, y + 3, 25, 5, 1, 1, 'F');
+                        doc.setFontSize(8);
+                        doc.text("SALAH", 177.5, y + 6.5, { align: "center" });
+                    }
+
+                    // Answers Info
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(9);
+                    doc.setTextColor(71, 85, 105); // Slate 600
+                    doc.text("Jawabanmu: ", 20, y + 14);
+                    
+                    doc.setFont("helvetica", "bold");
+                    if (isCorrect) {
+                        doc.setTextColor(5, 150, 105); // Emerald 600
+                    } else {
+                        doc.setTextColor(220, 38, 38); // Rose 600
+                    }
+                    doc.text(ans.options[ans.chosenIdx], 43, y + 14);
+
+                    doc.setFont("helvetica", "normal");
+                    doc.setTextColor(148, 163, 184); // Slate 400
+                    doc.text("|", 85, y + 14);
+
+                    doc.setTextColor(71, 85, 105); // Slate 600
+                    doc.text("Kunci Jawaban: ", 90, y + 14);
+                    
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(5, 150, 105); // Emerald 600
+                    doc.text(ans.options[ans.correctIdx], 118, y + 14);
+
+                    y += 25;
+                });
+
+                // Footer
+                if (y > 275) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setDrawColor(226, 232, 240); // Slate 200
+                doc.line(15, y + 5, 195, y + 5);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+                doc.setTextColor(148, 163, 184); // Slate 400
+                doc.text(`Dibuat otomatis oleh English with om Bale pada ${new Date().toLocaleString('id-ID')}`, 105, y + 10, { align: "center" });
+
+                // Save PDF directly
+                doc.save(`Hasil_Kuis_${playerName.replace(/\s+/g, '_')}.pdf`);
+
+            } catch (err) {
                 console.error("Gagal membuat PDF:", err);
+                alert("Terjadi kesalahan saat membuat PDF. Silakan coba lagi.");
+            } finally {
                 btn.innerHTML = originalContent;
                 btn.disabled = false;
-            });
+            }
         }
     </script>
 </body>
